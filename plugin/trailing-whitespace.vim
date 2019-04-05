@@ -4,6 +4,9 @@ let loaded_trailing_whitespace_plugin = 1
 if !exists('g:extra_whitespace_ignored_filetypes')
     let g:extra_whitespace_ignored_filetypes = []
 endif
+if !exists('g:extra_whitespace_ignored_file_patterns')
+  let g:extra_whitespace_ignored_file_patterns = []
+endif
 
 function! s:has_filetype(filetype)
   return index(split(&filetype, '\.'), a:filetype) != -1
@@ -12,14 +15,18 @@ endfunction
 function! ShouldMatchWhitespace()
   if has_key(b:, 'auto_fix_whitespace')
     return b:auto_fix_whitespace
-  else
-    for ft in g:extra_whitespace_ignored_filetypes
-      if s:has_filetype(ft)
-        return 0
-      endif
-    endfor
-    return 1
   endif
+  for ft in g:extra_whitespace_ignored_filetypes
+    if s:has_filetype(ft)
+      return 0
+    endif
+  endfor
+  for pat in g:extra_whitespace_ignored_file_patterns
+    if @% =~ pat
+      return 0
+    endif
+  endfor
+  return 1
 endfunction
 
 " Highlight EOL whitespace, http://vim.wikia.com/wiki/Highlight_unwanted_spaces
