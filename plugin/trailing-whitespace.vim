@@ -38,14 +38,21 @@ function! ShouldHighlightTrailingWhitespace()
   return 1
 endfunction
 
+fu! s:Match()
+  match ExtraWhitespace /\\\@<![\u3000[:space:]]\+$/
+endfu
+fu! s:MatchInsert()
+  match ExtraWhitespace /\\\@<![\u3000[:space:]]\+\%#\@<!$/
+endfu
+
 " Highlight EOL whitespace, http://vim.wikia.com/wiki/Highlight_unwanted_spaces
 highlight default ExtraWhitespace ctermbg=grey guibg=grey
 autocmd ColorScheme * highlight default ExtraWhitespace ctermbg=grey guibg=grey
-autocmd BufReadPost,BufNew * if ShouldMatchWhitespace() | match ExtraWhitespace /\\\@<![\u3000[:space:]]\+$/ | endif
+autocmd FileType * if ShouldMatchWhitespace() | call <SID>Match() | endif
 
 " The above flashes annoyingly while typing, be calmer in insert mode
-autocmd InsertLeave * if ShouldMatchWhitespace() | match ExtraWhitespace /\\\@<![\u3000[:space:]]\+$/ | endif
-autocmd InsertEnter * if ShouldMatchWhitespace() | match ExtraWhitespace /\\\@<![\u3000[:space:]]\+\%#\@<!$/ | endif
+autocmd InsertLeave * if ShouldMatchWhitespace() | call <SID>Match() | endif
+autocmd InsertEnter * if ShouldMatchWhitespace() | call <SID>MatchInsert() | endif
 
 function! s:FixWhitespace(line1,line2)
     let l:save_cursor = getpos(".")
