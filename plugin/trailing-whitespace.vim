@@ -29,10 +29,19 @@ function! ShouldMatchWhitespace()
   return 1
 endfunction
 
+function! ShouldHighlightTrailingWhitespace()
+  for ft in g:highlight_trailing_whitespace_ignored_filetypes
+    if s:has_filetype(ft)
+      return 0
+    endif
+  endfor
+  return 1
+endfunction
+
 " Highlight EOL whitespace, http://vim.wikia.com/wiki/Highlight_unwanted_spaces
 highlight default ExtraWhitespace ctermbg=grey guibg=grey
 autocmd ColorScheme * highlight default ExtraWhitespace ctermbg=grey guibg=grey
-autocmd BufRead,BufNew * if ShouldMatchWhitespace() | match ExtraWhitespace /\\\@<![\u3000[:space:]]\+$/ | else | match ExtraWhitespace /^^/ | endif
+autocmd BufReadPost,BufNew * if ShouldMatchWhitespace() | match ExtraWhitespace /\\\@<![\u3000[:space:]]\+$/ | endif
 
 " The above flashes annoyingly while typing, be calmer in insert mode
 autocmd InsertLeave * if ShouldMatchWhitespace() | match ExtraWhitespace /\\\@<![\u3000[:space:]]\+$/ | endif
