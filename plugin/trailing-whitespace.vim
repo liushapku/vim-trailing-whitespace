@@ -22,7 +22,7 @@ function! ShouldMatchWhitespace()
     endif
   endfor
   for pat in g:extra_whitespace_ignored_file_patterns
-    if @% =~ pat
+    if expand('%:p') =~ pat
       return 0
     endif
   endfor
